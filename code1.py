@@ -124,16 +124,16 @@ def Linear_Regression():
 
 #Linear_Regression()    
 
-#Association Mining using Apriori Algorithm
+#Association Mining using Apriori
 def Apriori():
     transactions = []
     #print(row4)
     for i in range(0,row4):
-        for j in range(0,col4):
-            transactions.append(mar_data.values[i,j])
+        transactions.append([str(mar_data.values[i,j]) for j in range(0,col4)])
             
-    rules = apriori(transactions,min_support=0.015,min_confidence=0.2,min_lift=3,min_length=2)
-    
+    #rules = apriori(transactions,min_support=0.015,min_confidence=0.2,min_lift=3,min_length=2)
+    rules = apriori(transactions,min_support=0.015,min_confidence=0.4,min_length=2)
+        
     result = list(rules)
     print(result)
 
