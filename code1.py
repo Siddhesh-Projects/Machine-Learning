@@ -8,6 +8,7 @@ Created on Sun Dec 16 14:29:48 2018
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import random
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import cross_validation
 from sklearn.cluster import KMeans
@@ -15,15 +16,27 @@ from sklearn.preprocessing import scale
 from sklearn import linear_model
 from apyori import apriori
 
+
 datafile1 = 'titanic.csv'
 datafile2 = 'Wine.csv'
 datafile3 = 'Summary of Weather.csv'
 datafile4 = 'marketbasket.csv'
+datafile5 = 'Ads_CTR_Optimisation.csv'
 
 tit_data = pd.read_csv(datafile1)
 win_data = pd.read_csv(datafile2)
 wea_data = pd.read_csv(datafile3)
 mar_data = pd.read_csv(datafile4)
+ads_data = pd.read_csv(datafile5)
+
+row1,col1 = tit_data.shape
+row2,col2 = win_data.shape
+row3,col3 = wea_data.shape
+row4,col4 = mar_data.shape
+row5,col5 = ads_data.shape
+
+m = {'male' : 1, 'female' : 0}
+tit_data["Sex"] = tit_data.Sex.map(m)
 
 #print(tit_data.head())
 scale(win_data)
@@ -33,14 +46,6 @@ wea_data = wea_data.replace('T',0)
 wea_data = wea_data.replace('#VALUE!',0)
 wea_data.fillna(0,inplace=True)
 #print(np.sum(np.invert(np.isreal(wea_data[attributes1]))))
-
-m = {'male' : 1, 'female' : 0}
-tit_data["Sex"] = tit_data.Sex.map(m)
-
-row1,col1 = tit_data.shape
-row2,col2 = win_data.shape
-row3,col3 = wea_data.shape
-row4,col4 = mar_data.shape
 
 mark1 = (2*row1)/3
 mark2 = (2*row2)/3
@@ -139,24 +144,38 @@ def Apriori():
 
 #Apriori()
 
+#Reinforcement Learning using Thompson Sampling
+def Thompson_Sampling():
+    ads_selected = []
+    num_of_rewards_0 = [0] * col5
+    num_of_rewards_1 = [0] * col5
+    total_rewards = 0
+    
+    for i in range(0,row5):
+        ad = 0
+        max_random_value = 0
+        
+        for j in range(0,col5):
+            random_beta_value = random.betavariate(num_of_rewards_1[j] + 1,num_of_rewards_0[j] + 1)
+            
+            if random_beta_value > max_random_value:
+                max_random_value = random_beta_value
+                ad = j
+            
+        ads_selected.append(ad)
+        reward = ads_data.values[i,ad]
+        
+        if reward == 1:
+            num_of_rewards_1[ad] = num_of_rewards_1[ad] + 1
+        else:
+            num_of_rewards_0[ad] = num_of_rewards_0[ad] + 1
+        
+        total_rewards = total_rewards + reward
+    
+    #print(total_rewards)
+        
+    plt.hist(ads_selected)
+    plt.ylabel('Number Of Times Each Ad Was Selected')
+    plt.xlabel('Ad Number')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#Thompson_Sampling()
